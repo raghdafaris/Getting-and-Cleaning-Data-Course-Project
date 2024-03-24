@@ -11,51 +11,41 @@ destfile <- "file.zip"
 # Download the zip file
 download.file(url, destfile, method = "auto")
 
-#unzip the files in the same folder  
-unzip(destfile, exdir = "C:/Users/F&R/Desktop/DS/DS3/project 3/Project3")
+#unzip the files in the same folder Write you file location 
+unzip(destfile, exdir = "/Project3")
 
-# Example: Read features.txt
-features <- read.table("C:/Users/F&R/Desktop/DS/DS3/project 3/Project3/UCI HAR Dataset/features.txt", header = FALSE, stringsAsFactors = FALSE)
-
-
-# Example: Read activity_labels.txt
-activity_labels <- read.table("C:/Users/F&R/Desktop/DS/DS3/project 3/Project3/UCI HAR Dataset/activity_labels.txt", header = FALSE, stringsAsFactors = FALSE)
-
-# Example: Read training set
-X_train <- read.table("C:/Users/F&R/Desktop/DS/DS3/project 3/Project3/UCI HAR Dataset/train/X_train.txt", header = FALSE)
-y_train <- read.table("C:/Users/F&R/Desktop/DS/DS3/project 3/Project3/UCI HAR Dataset/train/y_train.txt", header = FALSE)
-subject_train <- read.table("C:/Users/F&R/Desktop/DS/DS3/project 3/Project3/UCI HAR Dataset/train/subject_train.txt", header = FALSE)
-
-# Example: Read test set
-X_test <- read.table("C:/Users/F&R/Desktop/DS/DS3/project 3/Project3/UCI HAR Dataset/test/X_test.txt", header = FALSE)
-y_test <- read.table("C:/Users/F&R/Desktop/DS/DS3/project 3/Project3/UCI HAR Dataset/test/y_test.txt", header = FALSE)
-subjectTest <- read.table("C:/Users/F&R/Desktop/DS/DS3/project 3/Project3/UCI HAR Dataset/test/subject_test.txt", header = FALSE)
+## WRITE YOUR FILE LOCATION BETWEEN THE "" OF EACH READ.TABLE COMMAND
+# Read features.txt
+features <- read.table("UCI HAR Dataset/features.txt", header = FALSE, stringsAsFactors = FALSE)
 
 
+#  Read activity_labels.txt
+activity_labels <- read.table("UCI HAR Dataset/activity_labels.txt", header = FALSE, stringsAsFactors = FALSE)
+
+# Read training set
+X_train <- read.table("train/X_train.txt", header = FALSE)
+y_train <- read.table("train/y_train.txt", header = FALSE)
+subject_train <- read.table("train/subject_train.txt", header = FALSE)
+
+#  Read test set
+X_test <- read.table("test/X_test.txt", header = FALSE)
+y_test <- read.table("test/y_test.txt", header = FALSE)
+subjectTest <- read.table("test/subject_test.txt", header = FALSE)
 
 # Creating the dataset 
 sub<-bind_rows(subject_train, subjectTest)
-
-
 X <- bind_rows(X_train, X_test)
 y <- bind_rows(y_train, y_test)
-
-
 data <- cbind(X, y,sub)
-
 
 # Assign column names to the dataset
 colnames(data) <- features$V2
-
 data[, 562] <- as.data.frame(data[, 562])
 colnames(data)[562] <- "Activity"
-
 data[, 563] <- as.data.frame(data[, 563])
 colnames(data)[563] <- "Subject"
 
 ##Q2
-
-# Assuming your data frame is named 'data'
 selected_columns <- grep("-*mean.*|-*std.*", names(data), value = TRUE,ignore.case=TRUE)
 last_two_columns <- tail(names(data), 2)
 desired_columns <- c(selected_columns, last_two_columns)
@@ -69,7 +59,6 @@ for (i in 1:6){
   selected_data$Activity[selected_data$Activity == i] <- as.character(activity_labels[i,2])
 }
 selected_data$Activity <- as.factor(selected_data$Activity)
-
 
 ##Q4
 names(selected_data)<-gsub("Acc", "Accelerometer", names(selected_data))
@@ -86,17 +75,10 @@ names(selected_data)<-gsub("angle", "Angle", names(selected_data))
 names(selected_data)<-gsub("gravity", "Gravity", names(selected_data))
 
 ##Q5
-
 # Group by activity and subject, then calculate the mean for each variable
 tidy_data <- selected_data %>%
   group_by(Activity, Subject) %>%
   summarise(across(everything(), mean))
-
-# Write the tidy data set to a CSV file
-write.csv(tidy_data, "tidy_data.csv", row.names = FALSE)
-
-# Print the first few rows of the tidy data set
-head(tidy_data)
 
 # Write the tidy data set to a text file
 write.table(tidy_data, "tidy_data.txt", row.names = FALSE)
