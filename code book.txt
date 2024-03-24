@@ -1,0 +1,20 @@
+Code Book
+
+The variables in the tidy dataset are described as follows:
+
+Activity: Descriptive label indicating the activity performed by the subject (e.g., walking, standing).
+Subject: Identifier for the subject who performed the activity.
+Other Variables: Each variable represents a specific measurement related to accelerometer 
+and gyroscope readings during various activities. 
+The variable names have been standardized according to the following conventions:
+
+Acc: Accelerometer
+Gyro: Gyroscope
+Body: Body acceleration signals
+Magnitude: Magnitude of the signals
+Time: Time domain signals
+Frequency: Frequency domain signals
+Mean: Mean value of the measurements
+STD: Standard deviation of the measurements
+Angle: Angle measurements
+Gravity: Gravity measurements
