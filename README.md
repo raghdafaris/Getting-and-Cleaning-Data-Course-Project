@@ -15,37 +15,30 @@ destfile <- "file.zip"
 download.file(url, destfile, method = "auto")
 
 #unzip the files in the same folder  
-unzip(destfile, exdir = "C:/Users/F&R/Desktop/DS/DS3/project 3/Project3")
+unzip(destfile, exdir = "Project3")
 
 2- Data Preprocessing: Reads the relevant files from the dataset, including features, activity labels, training, and test sets. It combines the datasets and assigns appropriate column names.
 
 # Read features.txt
-features <- read.table("C:/Users/F&R/Desktop/DS/DS3/project 3/Project3/UCI HAR Dataset/features.txt", header = FALSE, stringsAsFactors = FALSE)
-
+features <- read.table("UCI HAR Dataset/features.txt", header = FALSE, stringsAsFactors = FALSE)
 
 # Read activity_labels.txt
-activity_labels <- read.table("C:/Users/F&R/Desktop/DS/DS3/project 3/Project3/UCI HAR Dataset/activity_labels.txt", header = FALSE, stringsAsFactors = FALSE)
+activity_labels <- read.table("UCI HAR Dataset/activity_labels.txt", header = FALSE, stringsAsFactors = FALSE)
 
 # Read training set
-X_train <- read.table("C:/Users/F&R/Desktop/DS/DS3/project 3/Project3/UCI HAR Dataset/train/X_train.txt", header = FALSE)
-y_train <- read.table("C:/Users/F&R/Desktop/DS/DS3/project 3/Project3/UCI HAR Dataset/train/y_train.txt", header = FALSE)
-subject_train <- read.table("C:/Users/F&R/Desktop/DS/DS3/project 3/Project3/UCI HAR Dataset/train/subject_train.txt", header = FALSE)
+X_train <- read.table("train/X_train.txt", header = FALSE)
+y_train <- read.table("train/y_train.txt", header = FALSE)
+subject_train <- read.table("train/subject_train.txt", header = FALSE)
 
 # Read test set
-X_test <- read.table("C:/Users/F&R/Desktop/DS/DS3/project 3/Project3/UCI HAR Dataset/test/X_test.txt", header = FALSE)
-y_test <- read.table("C:/Users/F&R/Desktop/DS/DS3/project 3/Project3/UCI HAR Dataset/test/y_test.txt", header = FALSE)
-subjectTest <- read.table("C:/Users/F&R/Desktop/DS/DS3/project 3/Project3/UCI HAR Dataset/test/subject_test.txt", header = FALSE)
-
-
+X_test <- read.table("test/X_test.txt", header = FALSE)
+y_test <- read.table("test/y_test.txt", header = FALSE)
+subjectTest <- read.table("test/subject_test.txt", header = FALSE)
 
 # Creating the dataset 
 sub<-bind_rows(subject_train, subjectTest)
-
-
 X <- bind_rows(X_train, X_test)
 y <- bind_rows(y_train, y_test)
-
-
 data <- cbind(X, y,sub)
 
 # Assign column names to the dataset
@@ -61,13 +54,13 @@ colnames(data)[563] <- "Subject"
 3- Data Selection and Transformation: Select specific columns related to mean and standard deviation measurements. It transforms the activity column from numeric codes to descriptive labels based on provided activity labels.
 ##Q2
 
-# Assuming your data frame is named 'data'
+# Select only mean and std columns
 selected_columns <- grep("-*mean.*|-*std.*", names(data), value = TRUE,ignore.case=TRUE)
 last_two_columns <- tail(names(data), 2)
 desired_columns <- c(selected_columns, last_two_columns)
-# Extracting the desired columns from the data frame
 selected_data <- data[, desired_columns]
 
+# Changing the column names to Standardizes variable 
 4- Variable Naming Standardization: Standardizes variable names by replacing abbreviations with full descriptions and ensuring consistency in naming conventions.
 ##Q4
 names(selected_data)<-gsub("Acc", "Accelerometer", names(selected_data))
@@ -85,10 +78,9 @@ names(selected_data)<-gsub("gravity", "Gravity", names(selected_data))
 
 
 
+# Creating the final Tidy data by Grouping by activity and subject, then calculating the mean for each variable
 5- Tidy Data Creation: Aggregates the data to create a tidy dataset with the average of each variable for each activity and each subject.
 ##Q5
-
-# Group by activity and subject, then calculate the mean for each variable
 tidy_data <- selected_data %>%
   group_by(Activity, Subject) %>%
   summarise(across(everything(), mean))
